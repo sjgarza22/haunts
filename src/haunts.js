@@ -1,5 +1,5 @@
 class Haunts {
-    constructor(name, description, city, state, rating) {
+    constructor(name, description, city, state, rating=0) {
         this.name = name;
         this.description = description;
         this.city = city;
@@ -17,7 +17,7 @@ class Haunts {
         cardContainer.classList.add('col-md-4', 'col-sm-6', 'cell-box');
         newHauntCard.classList.add("card", "idea-listings");
         cardBody.classList.add('card-body');
-        cardTitle.classList.add('card-title');
+        cardTitle.classList.add('card-header');
         cardDescription.classList.add('card-text');
 
         cardTitle.innerHTML = this.name;
@@ -28,5 +28,11 @@ class Haunts {
         newHauntCard.append(cardBody);
         cardContainer.append(newHauntCard);
         container.append(cardContainer);
+    }
+
+    createPage(container) {
+        const pageContainer = document.createElement('DIV');
+        const pageTitle = document.createElement('H2');
+        const pageBody = document.createElement('DIV');
     }
 }
