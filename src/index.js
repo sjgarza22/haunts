@@ -60,10 +60,16 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(json => {
             json["data"].forEach(haunt => {
                 console.log(haunt)
+                const newHaunt = new Haunts(haunt['attributes']['id'],
+                                            haunt['attributes']['name'],
+                                            haunt['attributes']['description'],
+                                            haunt['attributes']['haunts_location']['city'],
+                                            haunt['attributes']['haunts_location']['state_abbrev']);
+                newHaunt.createCard(resultsContainer);
             })
         })
     }
-    
+
     function hauntsFetch(searchLocation) {
         const bodyData = { search: { search_input: searchLocation } }
 
