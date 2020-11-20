@@ -1,3 +1,9 @@
+function logout() {
+    localStorage.removeItem('jwt_token');
+    loadMain();
+    renderNaivation();
+}
+
 function renderNaivation() {
     const navLinksContainer = document.getElementById('nav-links');
 
@@ -11,7 +17,7 @@ function renderNaivation() {
                                         <li class="nav-item">
                                             <a href="#" class="nav-link m-2 menu-item" id="sign-out">Sign Out</a>
                                         </li>`;
-        document.getElementById('sign-out').addEventListener("click", () => { localStorage.removeItem('jwt_token') });
+        document.getElementById('sign-out').addEventListener("click", () => logout());
     } else {
         navLinksContainer.innerHTML = `<li class="nav-item">
                                             <a href="#" class="nav-link m-2 menu-item" id="about">About</a>
