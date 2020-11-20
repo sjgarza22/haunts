@@ -5,6 +5,14 @@ function clearBox(elementID)
     document.getElementById(elementID).innerHTML = "";
 }
 
+function isHidden(hid) {
+    if (hid.hidden == true) {
+        hid.hidden = false;
+    } else {
+        hid.hidden = true;
+    }
+}
+
 function aboutPage(e) {
     e.preventDefault();
 
