@@ -41,6 +41,37 @@ function contactPage(e) {
     const contactTitle = document.createElement('H2');
 }
 
+function loginFormHandler(e) {
+    e.preventDefault();
+
+    //clearBox('main');
+
+    const emailInput = e.target.querySelector("#login-email").value;
+    const pwInput = e.target.querySelector("#login-password").value;
+    loginFetch(emailInput, pwInput)
+}
+
+function loginFetch(email, password){
+    const bodyData = {user: {
+            email: email,
+            password: password
+        }
+    }
+
+    fetch(mainUrl + "/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(bodyData)
+    })
+    .then(response => response.json())
+    .then(json => {
+        // localStorage.getItem('jwt_token')
+        localStorage.setItem('jwt_token', json.jwt);
+        loadMain();
+        renderNaivation();
+    })
+}
+
 function loginForm(e) {
     e.preventDefault();
 
