@@ -11,6 +11,8 @@ HAUNTS is an app that will allow users to search for haunted/paranormal location
 ## Installation
 To install this program, please clone this repository.
 
+This is the FrontEnd of the application ONLY. In order to use this program, you will need to clone the BackEnd repository which you can find here: [Haunts-API](https://github.com/sjgarza22/haunts-api)
+
 You will need to have Ruby installed, and all additional Gems needed to run this program can be installed with the following command: bundle install
 
 To create the neccessary databases run: rake db:migrate
