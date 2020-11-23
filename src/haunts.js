@@ -28,7 +28,7 @@ class Haunts {
         location.classList.add('card-text');
 
         cardTitle.innerHTML = `<h5>${this.name}</h5>`;
-        cardDescription.innerHTML = this.text_truncate(this.description, 150);
+        cardDescription.innerHTML = this.text_truncate(this.description, 150) + "<hr>";
         rating.innerHTML = `Rating: ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${this.ratingTotal}`;
         location.innerHTML = `${this.city}, ${this.state}`;
 
@@ -45,9 +45,17 @@ class Haunts {
     }
 
     createPage(container) {
-        const pageContainer = document.createElement('DIV');
-        const pageTitle = document.createElement('H2');
+        const outerContainer = document.createElement('DIV');
+        const innerContainer = document.createElement('DIV');
+        const pageTitleContainer = document.createElement('DIV');
+        const titleElement = document.createElement('H2');
         const pageBody = document.createElement('DIV');
+
+        outerContainer.classList.add('container');
+        innerContainer.classList.add('row', 'justify-content-center');
+        pageTitleContainer.classList.add('col-8');
+
+        container.append(pageContainer);
     }
 
     text_truncate(str, length) {
