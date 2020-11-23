@@ -32,7 +32,7 @@ class Haunts {
 
         cardTitle.innerHTML = `<h5>${this.name}</h5>`;
         cardDescription.innerHTML = this.text_truncate(this.description, 150) + "<hr>";
-        rating.innerHTML = `Rating: <div class="stars-outer"><div class="stars-inner"></div></div> ${this.ratingTotal}`;
+        rating.innerHTML = `Rating: <div class="ghosts-outer"><div class="ghosts-inner rating-${this.id}"></div></div> ${this.ratingTotal}`;
         location.innerHTML = `${this.city}, ${this.state}`;
         footer.innerHTML = `<a href="#" id="read-more-${this.id}">Read More</a>`;
 
@@ -52,6 +52,7 @@ class Haunts {
         container.append(cardContainer);
 
         document.getElementById(`read-more-${this.id}`).addEventListener('click', (e) => { this.pull_up_page(e) })
+        this.ghost_rating_view(`.rating-${this.id}`);
     }
 
     createPage(container) {
@@ -73,16 +74,18 @@ class Haunts {
         backButton.classList.add('col-8');
         pageTitleContainer.classList.add('col-8', 'pt-3');
         pageBody.classList.add('col-8');
-        ratingContainer.classList.add('row');
+        ratingContainer.classList.add('row', 'user-rating');
         ratingTotal.classList.add('col-6');
+        // ratingTotal.id = `rating-${this.id}`;
         userRating.classList.add('col-6', 'text-right');
+        // userRating.id = "spirit-select";
 
         backButton.innerHTML = `<a href="#" id="back"><i class="fas fa-arrow-left"></i> Back to Results</a>`;
         titleElement.innerHTML = `${this.name}`;
         pageTitleContainer.append(titleElement);
 
         pageBody.appendChild(document.createElement('hr'));
-        ratingTotal.innerHTML = `Rating: ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${this.ratingTotal}`;
+        ratingTotal.innerHTML = `Rating: <div class="ghosts-outer"><div class="ghosts-inner page-rating-${this.id}"></div></div> ${this.ratingTotal}`;
         ratingContainer.appendChild(ratingTotal);
         this.leave_rating(ratingContainer, userRating);
 
@@ -101,6 +104,14 @@ class Haunts {
         container.append(outerContainer);
 
         document.getElementById('back').addEventListener('click', (e) => { this.return_to_results(e) })
+        const rate = document.getElementsByName('rate');
+        console.log(rate)
+        for(const ratings of rate){
+            // console.log(current_rating);
+            // ratings.addEventListener('onclick', this.rating_controller())
+            ratings.onclick = () => { this.rating_controller(this.current_user_rating) };
+        }
+        this.ghost_rating_view(`.page-rating-${this.id}`);
     }
 
     pull_up_page(e) {
@@ -124,9 +135,19 @@ class Haunts {
     }
 
     leave_rating(mainContainer, ratingElement) {
-        const ratingSpirit = '<i class="fas fa-ghost"></i>';
         if (localStorage.jwt_token) {
-            ratingElement.innerHTML = `Rating: ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${ratingSpirit}`;
+            ratingElement.innerHTML = `Rating: <form action="#" id="spiritSelect">
+            <input type="radio" name="rate" id="rate-5">
+            <label for="rate-5" class="fas fa-ghost"></label>
+            <input type="radio" name="rate" id="rate-4">
+            <label for="rate-4" class="fas fa-ghost"></label>
+            <input type="radio" name="rate" id="rate-3">
+            <label for="rate-3" class="fas fa-ghost"></label>
+            <input type="radio" name="rate" id="rate-2">
+            <label for="rate-2" class="fas fa-ghost"></label>
+            <input type="radio" name="rate" id="rate-1">
+            <label for="rate-1" class="fas fa-ghost"></label>
+            </form>`;
         } else {
             ratingElement.innerHTML = `<a href="#">Login</a> to leave a Rating`;
         }
@@ -134,23 +155,56 @@ class Haunts {
         mainContainer.appendChild(ratingElement);
     }
 
-    new_rating() {
+    rating_controller(current_rating) {
+        if (current_rating == 0) {
+            if (document.getElementById('rate-5').checked) {
+                current_rating = 5;
+            } else if (document.getElementById('rate-4').checked) {
+                current_rating = 4;
+            } else if (document.getElementById('rate-3').checked) {
+                current_rating = 3;
+            } else if (document.getElementById('rate-2').checked) {
+                current_rating = 2;
+            } else {
+                current_rating = 1;
+            }
+            console.log(current_rating)
+            this.new_rating(current_rating, this.id);
+        } else {
+            // will call patch method
+            console.log("test")
+        }   
+    }
+
+    new_rating(rating, id) {
         const bodyData = {rating: {
-            rating: this.current_user_rating,
-            haunt_id: this.id
+            rating: rating,
+            haunt_id: id
         }}
 
-        fetch('http://localhost:3000/ratings/new', {
+        fetch('http://localhost:3000/ratings', {
             method: 'POST',
             headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwt_token')}`,
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.jwt_token}`
+            },
             body: JSON.stringify(bodyData)
-            }
         })
         .then(response => response.json())
         .then(json => {
             console.log(json);
         })
+    }
+
+    ghost_rating_view(selectors) {
+        const spiritTotal = 5;
+        const ghostPercentage = (this.ratingTotal / spiritTotal) * 100;
+        
+        const ghostPercentageRounded = `${(Math.round(ghostPercentage / 10) * 10)}%`;
+        console.log(ghostPercentageRounded);
+        
+        document.querySelector(`${selectors}`).style.width = ghostPercentageRounded;
     }
 
     text_truncate(str, length) {
