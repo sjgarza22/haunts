@@ -119,6 +119,7 @@ function hauntsFetch(searchLocation) {
     .then(json => {
         console.log(json);
         json["data"].forEach(haunt => {
+            const resultsContainer = document.getElementById('results');
             const newHaunt = new Haunts(haunt['attributes']['haunt_id'],
                                         haunt['attributes']['haunt']['name'],
                                         haunt['attributes']['haunt']['description'],
@@ -145,6 +146,7 @@ function loadMain() {
 
                                 <div class="container">
                                     <div class="row row-cols-1 row-cols-md-3" id="results">
+                                    </div>
                                 </div>`;
     
     document.getElementById('search-form').addEventListener("submit", (e) => searchFormHandler(e))
