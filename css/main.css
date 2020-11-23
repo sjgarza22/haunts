@@ -2,3 +2,31 @@
     font-family: 'Averia Libre';
     font-size: 3rem;
 }
+
+/*****************************
+Spirit Rating System
+*****************************/
+.stars-outer {
+    display: inline-block;
+    position: relative;
+    font-family: FontAwesome;
+  }
+   
+  .stars-outer::before {
+    content: "\f6e2 \f6e2 \f6e2 \f6e2 \f6e2";
+    color: #6b6b6b;
+  }
+   
+  .stars-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+  }
+   
+  .stars-inner::before {
+    content: "\f6e2 \f6e2 \f6e2 \f6e2 \f6e2";
+    color: #490757;
+  }
