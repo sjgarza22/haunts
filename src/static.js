@@ -144,7 +144,7 @@ function loadMain() {
                                     </div>
                                 </div>
 
-                                <div class="container">
+                                <div class="container" id="outer-results">
                                     <div class="row row-cols-1 row-cols-md-3" id="results">
                                     </div>
                                 </div>`;
