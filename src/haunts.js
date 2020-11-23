@@ -1,12 +1,12 @@
 class Haunts {
-    constructor(id, name, description, city, state, rating=0, ratingTotal=0) {
+    constructor(id, name, description, city, state, current_user_rating=0, ratingTotal=0) {
         this.id = id
         this.name = name;
         this.description = description;
         this.city = city;
         this.state = state;
         this.ratingTotal = ratingTotal;
-        this.rating = rating;
+        this.current_user_rating = current_user_rating;
     }
 
     createCard(container) {
@@ -32,7 +32,7 @@ class Haunts {
 
         cardTitle.innerHTML = `<h5>${this.name}</h5>`;
         cardDescription.innerHTML = this.text_truncate(this.description, 150) + "<hr>";
-        rating.innerHTML = `Rating: ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${ratingSpirit} ${this.ratingTotal}`;
+        rating.innerHTML = `Rating: <div class="stars-outer"><div class="stars-inner"></div></div> ${this.ratingTotal}`;
         location.innerHTML = `${this.city}, ${this.state}`;
         footer.innerHTML = `<a href="#" id="read-more-${this.id}">Read More</a>`;
 
@@ -134,13 +134,13 @@ class Haunts {
         mainContainer.appendChild(ratingElement);
     }
 
-    rating_create() {
+    new_rating() {
         const bodyData = {rating: {
-            rating: ,
-            password: password
+            rating: this.current_user_rating,
+            haunt_id: this.id
         }}
 
-        fetch('http://localhost:3000/rating/new', {
+        fetch('http://localhost:3000/ratings/new', {
             method: 'POST',
             headers: {
             Authorization: `Bearer ${localStorage.getItem('jwt_token')}`,
@@ -149,7 +149,7 @@ class Haunts {
         })
         .then(response => response.json())
         .then(json => {
-            alert(`Welcome back ${json.user.data.attributes.name}`)
+            console.log(json);
         })
     }
 
