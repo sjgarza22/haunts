@@ -65,10 +65,13 @@ function loginFetch(email, password){
     })
     .then(response => response.json())
     .then(json => {
-        // localStorage.getItem('jwt_token')
-        localStorage.setItem('jwt_token', json.jwt);
-        loadMain();
-        renderNaivation();
+        if (json.jwt){
+            localStorage.setItem('jwt_token', json.jwt);
+            loadMain();
+            renderNaivation();
+        } else {
+            loadMain();
+        }
     })
 }
 
