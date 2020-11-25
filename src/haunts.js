@@ -10,7 +10,6 @@ class Haunts {
     }
 
     createCard(container) {
-        const ratingSpirit = '<i class="fas fa-ghost"></i>';
         const horizontalLine = document.createElement('hr');
         const cardContainer = document.createElement('DIV');
         const newHauntCard = document.createElement('DIV');
@@ -56,7 +55,6 @@ class Haunts {
     }
 
     createPage(container) {
-        const ratingSpirit = '<i class="fas fa-ghost"></i>';
         const outerContainer = document.createElement('DIV');
         const innerContainer = document.createElement('DIV');
         const backButton = document.createElement('DIV');
@@ -76,9 +74,8 @@ class Haunts {
         pageBody.classList.add('col-8');
         ratingContainer.classList.add('row', 'user-rating');
         ratingTotal.classList.add('col-6');
-        // ratingTotal.id = `rating-${this.id}`;
         userRating.classList.add('col-6', 'text-right');
-        // userRating.id = "spirit-select";
+        userRating.id = "spirit-select";
 
         backButton.innerHTML = `<a href="#" id="back"><i class="fas fa-arrow-left"></i> Back to Results</a>`;
         titleElement.innerHTML = `${this.name}`;
@@ -107,11 +104,13 @@ class Haunts {
         const rate = document.getElementsByName('rate');
         console.log(rate)
         for(const ratings of rate){
-            // console.log(current_rating);
-            // ratings.addEventListener('onclick', this.rating_controller())
             ratings.onclick = () => { this.rating_controller(this.current_user_rating) };
         }
         this.ghost_rating_view(`.page-rating-${this.id}`);
+        document.getElementById('rating-destroy').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.clear_rating();
+        })
     }
 
     pull_up_page(e) {
@@ -146,15 +145,10 @@ class Haunts {
             <input type="radio" name="rate" id="rate-2">
             <label for="rate-2" class="fas fa-ghost"></label>
             <input type="radio" name="rate" id="rate-1">
-            <label for="rate-1" class="fas fa-ghost"></label>`;
+            <label for="rate-1" class="fas fa-ghost"></label>
+            <a href="#" id="rating-destroy">Clear</a>`;
 
-            // const rating = 
             this.get_rating();
-            // console.log(rating)
-            // if (rating != null && rating > 0) {
-            //     this.current_user_rating = rating;
-            //     document.getElementsByID(`rate-${rating}`).checked = true;
-            // }
         } else {
             ratingElement.innerHTML = `<a href="#">Login</a> to leave a Rating`;
         }
@@ -163,24 +157,25 @@ class Haunts {
     }
 
     rating_controller(current_rating) {
-        if (current_rating == 0) {
-            if (document.getElementById('rate-5').checked) {
-                this.current_user_rating = 5;
-            } else if (document.getElementById('rate-4').checked) {
-                this.current_user_rating = 4;
-            } else if (document.getElementById('rate-3').checked) {
-                this.current_user_rating = 3;
-            } else if (document.getElementById('rate-2').checked) {
-                this.current_user_rating = 2;
-            } else {
-                this.current_user_rating = 1;
-            }
-            console.log(this.current_user_rating)
-            this.new_rating(this.current_user_rating, this.id);
+        let new_user_rating = 0;
+        if (document.getElementById('rate-5').checked) {
+            new_user_rating = 5;
+        } else if (document.getElementById('rate-4').checked) {
+            new_user_rating = 4;
+        } else if (document.getElementById('rate-3').checked) {
+            new_user_rating = 3;
+        } else if (document.getElementById('rate-2').checked) {
+            new_user_rating = 2;
+        } else {
+            new_user_rating = 1;
+        }
+
+        if (current_rating == 0) {      
+            this.new_rating(new_user_rating, this.id);
         } else {
             // will call patch method
-            console.log("test")
-        }   
+            this.patch_rating(new_user_rating);
+        }
     }
 
     new_rating(rating, id) {
@@ -219,18 +214,21 @@ class Haunts {
             if (rating != null && rating > 0) {
                 this.current_user_rating = rating;
                 document.getElementById(`rate-${rating}`).checked = true;
+                document.getElementById('spirit-select').setAttribute("data-rating-id", json['data'][0]['attributes']['id']);
             }
         })
     }
 
     patch_rating(newRating) {
+        const rating_id = document.getElementById('spirit-select').getAttribute("data-rating-id");
         const bodyData = {rating: {
+            id: rating_id,
             rating: newRating,
             haunt_id: this.id
         }}
 
-        fetch('http://localhost:3000/ratings', {
-            method: 'POST',
+        fetch(`http://localhost:3000/ratings/${rating_id}`, {
+            method: 'PATCH',
             headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
@@ -241,16 +239,19 @@ class Haunts {
         .then(response => response.json())
         .then(json => {
             console.log(json);
+            const rating = json['data']['attributes']['rating'];
+            this.current_user_rating = rating;
         })
     }
 
-    clear_rating(rating_id) {
+    clear_rating() {
+        const rating_id = document.getElementById('spirit-select').getAttribute("data-rating-id");
         const bodyData = {rating: {
             rating: rating_id,
             haunt_id: this.id
         }}
 
-        fetch('http://localhost:3000/ratings', {
+        fetch(`http://localhost:3000/ratings/${rating_id}`, {
             method: 'DELETE',
             headers: {
             "Accept": "application/json",
@@ -262,7 +263,8 @@ class Haunts {
         .then(response => response.json())
         .then(json => {
             console.log(json);
-            document.getElementById(`rate-${rating}`).checked = false;
+            document.getElementById(`rate-${this.current_user_rating}`).checked = false;
+            this.current_user_rating = 0;
         })
     }
 
