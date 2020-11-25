@@ -136,7 +136,7 @@ class Haunts {
 
     leave_rating(mainContainer, ratingElement) {
         if (localStorage.jwt_token) {
-            ratingElement.innerHTML = `Rating: <form action="#" id="spiritSelect">
+            ratingElement.innerHTML = `Rating: 
             <input type="radio" name="rate" id="rate-5">
             <label for="rate-5" class="fas fa-ghost"></label>
             <input type="radio" name="rate" id="rate-4">
@@ -146,8 +146,15 @@ class Haunts {
             <input type="radio" name="rate" id="rate-2">
             <label for="rate-2" class="fas fa-ghost"></label>
             <input type="radio" name="rate" id="rate-1">
-            <label for="rate-1" class="fas fa-ghost"></label>
-            </form>`;
+            <label for="rate-1" class="fas fa-ghost"></label>`;
+
+            // const rating = 
+            this.get_rating();
+            // console.log(rating)
+            // if (rating != null && rating > 0) {
+            //     this.current_user_rating = rating;
+            //     document.getElementsByID(`rate-${rating}`).checked = true;
+            // }
         } else {
             ratingElement.innerHTML = `<a href="#">Login</a> to leave a Rating`;
         }
@@ -158,18 +165,18 @@ class Haunts {
     rating_controller(current_rating) {
         if (current_rating == 0) {
             if (document.getElementById('rate-5').checked) {
-                current_rating = 5;
+                this.current_user_rating = 5;
             } else if (document.getElementById('rate-4').checked) {
-                current_rating = 4;
+                this.current_user_rating = 4;
             } else if (document.getElementById('rate-3').checked) {
-                current_rating = 3;
+                this.current_user_rating = 3;
             } else if (document.getElementById('rate-2').checked) {
-                current_rating = 2;
+                this.current_user_rating = 2;
             } else {
-                current_rating = 1;
+                this.current_user_rating = 1;
             }
-            console.log(current_rating)
-            this.new_rating(current_rating, this.id);
+            console.log(this.current_user_rating)
+            this.new_rating(this.current_user_rating, this.id);
         } else {
             // will call patch method
             console.log("test")
@@ -194,6 +201,68 @@ class Haunts {
         .then(response => response.json())
         .then(json => {
             console.log(json);
+        })
+    }
+
+    get_rating() {
+        fetch(`http://localhost:3000/haunts/${this.id}/ratings`, {
+            method: 'GET',
+            headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.jwt_token}`
+            }
+        })
+        .then(response => response.json())
+        .then(json => {
+            const rating = json['data'][0]['attributes']['rating'];
+            if (rating != null && rating > 0) {
+                this.current_user_rating = rating;
+                document.getElementById(`rate-${rating}`).checked = true;
+            }
+        })
+    }
+
+    patch_rating(newRating) {
+        const bodyData = {rating: {
+            rating: newRating,
+            haunt_id: this.id
+        }}
+
+        fetch('http://localhost:3000/ratings', {
+            method: 'POST',
+            headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.jwt_token}`
+            },
+            body: JSON.stringify(bodyData)
+        })
+        .then(response => response.json())
+        .then(json => {
+            console.log(json);
+        })
+    }
+
+    clear_rating(rating_id) {
+        const bodyData = {rating: {
+            rating: rating_id,
+            haunt_id: this.id
+        }}
+
+        fetch('http://localhost:3000/ratings', {
+            method: 'DELETE',
+            headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.jwt_token}`
+            },
+            body: JSON.stringify(bodyData)
+        })
+        .then(response => response.json())
+        .then(json => {
+            console.log(json);
+            document.getElementById(`rate-${rating}`).checked = false;
         })
     }
 
