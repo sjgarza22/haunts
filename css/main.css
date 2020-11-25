@@ -4,20 +4,20 @@
 }
 
 /*****************************
-Spirit Rating System
+Spirit Total Rating System
 *****************************/
-.stars-outer {
+.ghosts-outer {
     display: inline-block;
     position: relative;
     font-family: FontAwesome;
   }
    
-  .stars-outer::before {
+  .ghosts-outer::before {
     content: "\f6e2 \f6e2 \f6e2 \f6e2 \f6e2";
     color: #6b6b6b;
   }
    
-  .stars-inner {
+  .ghosts-inner {
     position: absolute;
     top: 0;
     left: 0;
@@ -26,7 +26,41 @@ Spirit Rating System
     width: 0;
   }
    
-  .stars-inner::before {
+  .ghosts-inner::before {
     content: "\f6e2 \f6e2 \f6e2 \f6e2 \f6e2";
     color: #490757;
+  }
+
+/*****************************
+Spirit User Rating System
+*****************************/
+.user-rating input{
+    display: none;
+}
+
+.user-rating label{
+    font-size: 20px;
+    color: #444;
+    padding-left: 10px;
+    padding-right: 10px;
+    float: right;
+    transition: all 0.2s ease;
+  }
+
+  input:not(:checked) ~ label:hover,
+  input:not(:checked) ~ label:hover ~ label{
+    color: #490757;
+  }
+  input:checked ~ label{
+    color: #490757;
+  }
+  input#rate-5:checked ~ label{
+    color: #550964;
+    text-shadow: 0 0 20px #952;
+  }
+  /* .container form{
+    display: none;
+  } */
+  input:checked ~ form{
+    display: block;
   }
