@@ -51,7 +51,7 @@ class Haunts {
         container.append(cardContainer);
 
         document.getElementById(`read-more-${this.id}`).addEventListener('click', (e) => { this.pull_up_page(e) })
-        this.ghost_rating_view(`.rating-${this.id}`);
+        this.total_ratings(`.rating-${this.id}`);
     }
 
     createPage(container) {
@@ -106,7 +106,7 @@ class Haunts {
         for(const ratings of rate){
             ratings.onclick = () => { this.rating_controller(this.current_user_rating) };
         }
-        this.ghost_rating_view(`.page-rating-${this.id}`);
+        this.total_ratings(`.page-rating-${this.id}`);
         document.getElementById('rating-destroy').addEventListener('click', (e) => {
             e.preventDefault();
             this.clear_rating();
@@ -265,6 +265,27 @@ class Haunts {
             console.log(json);
             document.getElementById(`rate-${this.current_user_rating}`).checked = false;
             this.current_user_rating = 0;
+        })
+    }
+
+    total_ratings(selectors) {
+        fetch(`http://localhost:3000/haunts/${this.id}`, {
+            method: 'GET',
+            headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.jwt_token}`
+            }
+        })
+        .then(response => response.json())
+        .then(json => {
+            const ratings = json['data']['attributes']['ratings'];
+            let sum = 0;
+            ratings.forEach(rating => {
+                sum += rating.rating;
+            })
+            this.ratingTotal = sum / ratings.length;
+            this.ghost_rating_view(selectors);
         })
     }
 
