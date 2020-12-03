@@ -1,4 +1,6 @@
 const mainContainer = document.getElementById('main');
+const resultsContainer = document.getElementById('results');
+let resultsArray = [];
 
 function clearBox(elementID)
 {
@@ -120,16 +122,39 @@ function hauntsFetch(searchLocation) {
     })
     .then(response => response.json())
     .then(json => {
+        const resultsContainer = document.getElementById('results');
         console.log(json);
         json["data"].forEach(haunt => {
-            const resultsContainer = document.getElementById('results');
             const newHaunt = new Haunts(haunt['attributes']['haunt_id'],
                                         haunt['attributes']['haunt']['name'],
                                         haunt['attributes']['haunt']['description'],
                                         haunt['attributes']['city'],
                                         haunt['attributes']['state_abbrev']);
             newHaunt.createCard(resultsContainer);
+            resultsArray.push(newHaunt);
         })
+    })
+}
+
+function sort_results() {
+    const resultsContainer = document.getElementById('results');
+    resultsArray.sort(function(a, b) {
+        let nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+      
+        // names must be equal
+        return 0;
+      });
+      clearBox('results');
+    resultsArray.forEach(haunt => {
+        
+        haunt.createCard(resultsContainer);
     })
 }
 
@@ -144,6 +169,9 @@ function loadMain() {
                                                 <input type="Submit" value="Search">
                                             </form>
                                         </div>
+                                        <div class="col-md">
+                                            <button id="sort">Sort A-Z</button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -153,4 +181,5 @@ function loadMain() {
                                 </div>`;
     
     document.getElementById('search-form').addEventListener("submit", (e) => searchFormHandler(e))
+    document.getElementById('sort').addEventListener("click", () => sort_results())
 }
