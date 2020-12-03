@@ -31,7 +31,7 @@ class Haunts {
 
         cardTitle.innerHTML = `<h5>${this.name}</h5>`;
         cardDescription.innerHTML = this.text_truncate(this.description, 150) + "<hr>";
-        rating.innerHTML = `Rating: <div class="ghosts-outer"><div class="ghosts-inner rating-${this.id}"></div></div> ${this.ratingTotal}`;
+        rating.innerHTML = `Rating: <div class="ghosts-outer"><div class="ghosts-inner rating-${this.id}"></div></div> <span id="total-${this.id}"></span>`;
         location.innerHTML = `${this.city}, ${this.state}`;
         footer.innerHTML = `<a href="#" id="read-more-${this.id}">Read More</a>`;
 
@@ -51,7 +51,7 @@ class Haunts {
         container.append(cardContainer);
 
         document.getElementById(`read-more-${this.id}`).addEventListener('click', (e) => { this.pull_up_page(e) })
-        this.total_ratings(`.rating-${this.id}`);
+        this.total_ratings(`.rating-${this.id}`, `total-${this.id}`);
     }
 
     createPage(container) {
@@ -82,7 +82,7 @@ class Haunts {
         pageTitleContainer.append(titleElement);
 
         pageBody.appendChild(document.createElement('hr'));
-        ratingTotal.innerHTML = `Rating: <div class="ghosts-outer"><div class="ghosts-inner page-rating-${this.id}"></div></div> ${this.ratingTotal}`;
+        ratingTotal.innerHTML = `Rating: <div class="ghosts-outer"><div class="ghosts-inner page-rating-${this.id}"></div></div> <span id="total-page-${this.id}"></span>`;
         ratingContainer.appendChild(ratingTotal);
         this.leave_rating(ratingContainer, userRating);
 
@@ -106,7 +106,7 @@ class Haunts {
         for(const ratings of rate){
             ratings.onclick = () => { this.rating_controller(this.current_user_rating) };
         }
-        this.total_ratings(`.page-rating-${this.id}`);
+        this.total_ratings(`.page-rating-${this.id}`, `total-page-${this.id}`);
         document.getElementById('rating-destroy').addEventListener('click', (e) => {
             e.preventDefault();
             this.clear_rating();
@@ -196,6 +196,8 @@ class Haunts {
         .then(response => response.json())
         .then(json => {
             console.log(json);
+            this.total_ratings(`.rating-${this.id}`, `total-${this.id}`);
+            this.total_ratings(`.page-rating-${this.id}`, `total-page-${this.id}`);
         })
     }
 
@@ -241,6 +243,8 @@ class Haunts {
             console.log(json);
             const rating = json['data']['attributes']['rating'];
             this.current_user_rating = rating;
+            this.total_ratings(`.rating-${this.id}`, `total-${this.id}`);
+            this.total_ratings(`.page-rating-${this.id}`, `total-page-${this.id}`);
         })
     }
 
@@ -265,10 +269,12 @@ class Haunts {
             console.log(json);
             document.getElementById(`rate-${this.current_user_rating}`).checked = false;
             this.current_user_rating = 0;
+            this.total_ratings(`.rating-${this.id}`, `total-${this.id}`);
+            this.total_ratings(`.page-rating-${this.id}`, `total-page-${this.id}`);
         })
     }
 
-    total_ratings(selectors) {
+    total_ratings(selectors, totalSpan) {
         fetch(`http://localhost:3000/haunts/${this.id}`, {
             method: 'GET',
             headers: {
@@ -284,8 +290,9 @@ class Haunts {
             ratings.forEach(rating => {
                 sum += rating.rating;
             })
-            this.ratingTotal = sum / ratings.length;
+            this.ratingTotal = (sum / ratings.length).toFixed(2);
             this.ghost_rating_view(selectors);
+            document.getElementById(totalSpan).innerHTML = this.ratingTotal;
         })
     }
 
